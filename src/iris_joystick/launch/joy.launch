@@ -1,0 +1,4 @@
+<launch>
+    <node name="joy_node" pkg="joy" type="joy_node" output="screen" respawn="true"/>
+    <node name="joystick" pkg="iris_joystick" type="joystick" output="screen" respawn="true"/>
+</launch>

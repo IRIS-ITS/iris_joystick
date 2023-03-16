@@ -1,0 +1,8 @@
+prefix=/home/her/Documents/control_joy/devel
+
+Name: iris_joystick
+Description: Description of iris_joystick
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
