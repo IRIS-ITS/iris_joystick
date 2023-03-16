@@ -1,2 +1,0 @@
-iris_joystick
--DCATKIN_DEVEL_PREFIX=/home/her/Documents/control_joy/devel -DCMAKE_INSTALL_PREFIX=/home/her/Documents/control_joy/install -G Unix Makefiles
