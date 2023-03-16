@@ -1,4 +1,10 @@
 <launch>
-    <node name="joy_node" pkg="joy" type="joy_node" output="screen" respawn="true"/>
+    <node name="joy_node" pkg="joy" type="joy_node" output="screen" respawn="true" ns="js0">
+        <param name="dev" value="/dev/input/js0"/>
+    </node>
+
+    <node name="joy_node" pkg="joy" type="joy_node" output="screen" respawn="true" ns="js1">
+        <param name="dev" value="/dev/input/js1"/>
+    </node>
     <node name="joystick" pkg="iris_joystick" type="joystick" output="screen" respawn="true"/>
 </launch>

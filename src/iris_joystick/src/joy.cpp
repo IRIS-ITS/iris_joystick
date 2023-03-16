@@ -61,11 +61,11 @@ ros::Publisher pub_all_data;
 
 ros::Timer send_timer;
 
-char send_buffer[64];
+char send_buffer[80];
 char header[4]="its";
 int8_t indentifier='7';
-float toogle_a, toogle_b, analog_l[2], axes_l2, axes_r2;
-int32_t button_kotak, button_r1, button_l1;
+float toogle_a[2], toogle_b[2], analog_l[2][2], axes_l2[2], axes_r2[2];
+int32_t button_kotak[2], button_r1[2], button_l1[2];
 
 void send_cllbck(const ros::TimerEvent &);
 
@@ -198,32 +198,54 @@ void send_cllbck(const ros::TimerEvent &)
     // std::cout<<"HALO\n";
     memcpy(send_buffer,header,3);
     memcpy(send_buffer+3,&indentifier,1);
-    memcpy(send_buffer+4,&toogle_a,4);
-    memcpy(send_buffer+8,&toogle_b,4);
-    memcpy(send_buffer+12,&button_kotak,4);
-    memcpy(send_buffer+16,&analog_l[0],4);
-    memcpy(send_buffer+20,&analog_l[1],4);
-    memcpy(send_buffer+24,&button_r1,4);
-    memcpy(send_buffer+28,&axes_l2,4);
-    memcpy(send_buffer+32,&axes_r2,4);
-    memcpy(send_buffer+36,&button_l1,4);
+    memcpy(send_buffer+4,&toogle_a[0],4);
+    memcpy(send_buffer+8,&toogle_b[0],4);
+    memcpy(send_buffer+12,&button_kotak[0],4);
+    memcpy(send_buffer+16,&analog_l[0][0],4);
+    memcpy(send_buffer+20,&analog_l[0][1],4);
+    memcpy(send_buffer+24,&button_r1[0],4);
+    memcpy(send_buffer+28,&axes_l2[0],4);
+    memcpy(send_buffer+32,&axes_r2[0],4);
+    memcpy(send_buffer+36,&button_l1[0],4);
+    memcpy(send_buffer+40,&toogle_a[1],4);
+    memcpy(send_buffer+44,&toogle_b[1],4);
+    memcpy(send_buffer+48,&button_kotak[1],4);
+    memcpy(send_buffer+52,&analog_l[1][0],4);
+    memcpy(send_buffer+56,&analog_l[1][1],4);
+    memcpy(send_buffer+60,&button_r1[1],4);
+    memcpy(send_buffer+64,&axes_l2[1],4);
+    memcpy(send_buffer+68,&axes_r2[1],4);
+    memcpy(send_buffer+72,&button_l1[1],4);
     int nsend = sendto(multiSocket.socketID, send_buffer, sizeof(send_buffer), 0, (struct sockaddr *)&multiSocket.destAddress, sizeof(struct sockaddr));
     // std::cout<<nsend;
 }
 
-void JoyCllbck(const sensor_msgs::Joy::ConstPtr  &msg)
+void JoyCllbckjs0(const sensor_msgs::Joy::ConstPtr  &msg)
 {
     ROS_INFO("[%f] [%f] [%d] [%f] [%f] [%d] [%f] [%f] [%d]", msg->axes[7], msg->axes[6], msg->buttons[3], msg->axes[0], msg->axes[1], msg->buttons[5], msg->axes[2], msg->axes[5], msg->buttons[4]);
-    toogle_a=msg->axes[7];
-    toogle_b=msg->axes[6];
-    button_kotak=msg->buttons[3];
-    analog_l[0]=msg->axes[0];
-    analog_l[1]=msg->axes[1];
-    button_r1=msg->buttons[5];
-    axes_l2=msg->axes[2];
-    axes_r2=msg->axes[5];
-    button_l1=msg->buttons[4];
+    toogle_a[0]=msg->axes[7];
+    toogle_b[0]=msg->axes[6];
+    button_kotak[0]=msg->buttons[3];
+    analog_l[0][0]=msg->axes[0];
+    analog_l[0][1]=msg->axes[1];
+    button_r1[0]=msg->buttons[5];
+    axes_l2[0]=msg->axes[2];
+    axes_r2[0]=msg->axes[5];
+    button_l1[0]=msg->buttons[4];
+}
 
+void JoyCllbckjs1(const sensor_msgs::Joy::ConstPtr  &msg)
+{
+    ROS_ERROR("[%f] [%f] [%d] [%f] [%f] [%d] [%f] [%f] [%d]", msg->axes[7], msg->axes[6], msg->buttons[3], msg->axes[0], msg->axes[1], msg->buttons[5], msg->axes[2], msg->axes[5], msg->buttons[4]);
+    toogle_a[1]=msg->axes[7];
+    toogle_b[1]=msg->axes[6];
+    button_kotak[1]=msg->buttons[3];
+    analog_l[1][0]=msg->axes[0];
+    analog_l[1][1]=msg->axes[1];
+    button_r1[1]=msg->buttons[5];
+    axes_l2[1]=msg->axes[2];
+    axes_r2[1]=msg->axes[5];
+    button_l1[1]=msg->buttons[4];
 }
 
 int main(int argc, char **argv)
@@ -239,7 +261,8 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    ros::Subscriber sub = NH.subscribe("joy", 10, JoyCllbck);
+    ros::Subscriber subjs0 = NH.subscribe("/js0/joy", 10, JoyCllbckjs0);
+    ros::Subscriber subjs1 = NH.subscribe("/js1/joy", 10, JoyCllbckjs1);
     send_timer = NH.createTimer(ros::Duration(0.1), send_cllbck);
 
     spinner.spin();
