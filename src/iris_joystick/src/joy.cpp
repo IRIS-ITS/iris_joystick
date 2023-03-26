@@ -61,7 +61,7 @@ ros::Publisher pub_all_data;
 
 ros::Timer send_timer;
 
-char send_buffer[94];
+char send_buffer[128];
 char header[4]="its";
 int8_t indentifier='7';
 
@@ -211,9 +211,9 @@ void send_cllbck(const ros::TimerEvent &)
     memcpy(send_buffer+28,&button_x[0],1);
     // memcpy(send_buffer+29,&button_o[0],1);
     // memcpy(send_buffer+30,&button_tr[0],1);
-    memcpy(send_buffer+31,&button_sq[0],1);
-    memcpy(send_buffer+32,&button_l1[0],1);
-    memcpy(send_buffer+33,&button_r1[0],1);
+    memcpy(send_buffer+29,&button_sq[0],1);
+    memcpy(send_buffer+30,&button_l1[0],1);
+    memcpy(send_buffer+31,&button_r1[0],1);
     // memcpy(send_buffer+34,&button_sl[0],1);
     // memcpy(send_buffer+35,&button_pl[0],1);
     // memcpy(send_buffer+36,&button_ps[0],1);
@@ -222,18 +222,18 @@ void send_cllbck(const ros::TimerEvent &)
     // memcpy(send_buffer+39,&button_left[0],1);
     // memcpy(send_buffer+40,&button_right[0],1);
     //js1
-    memcpy(send_buffer+41,&analog_l[1][0],4);
-    memcpy(send_buffer+45,&analog_l[1][1],4);
-    memcpy(send_buffer+49,&axes_l2[1],4);
-    memcpy(send_buffer+53,&analog_r[1][0],4);
-    memcpy(send_buffer+57,&analog_r[1][1],4);
-    memcpy(send_buffer+61,&axes_r2[1],4);
-    memcpy(send_buffer+65,&button_x[1],1);
+    memcpy(send_buffer+32,&analog_l[1][0],4);
+    memcpy(send_buffer+36,&analog_l[1][1],4);
+    memcpy(send_buffer+40,&axes_l2[1],4);
+    memcpy(send_buffer+44,&analog_r[1][0],4);
+    memcpy(send_buffer+48,&analog_r[1][1],4);
+    memcpy(send_buffer+52,&axes_r2[1],4);
+    memcpy(send_buffer+56,&button_x[1],1);
     // memcpy(send_buffer+66,&button_o[1],1);
     // memcpy(send_buffer+67,&button_tr[1],1);
-    memcpy(send_buffer+68,&button_sq[1],1);
-    memcpy(send_buffer+69,&button_l1[1],1);
-    memcpy(send_buffer+70,&button_r1[1],1);
+    memcpy(send_buffer+57,&button_sq[1],1);
+    memcpy(send_buffer+58,&button_l1[1],1);
+    memcpy(send_buffer+59,&button_r1[1],1);
     // memcpy(send_buffer+71,&button_sl[1],1);
     // memcpy(send_buffer+72,&button_pl[1],1);
     // memcpy(send_buffer+73,&button_ps[1],1);
