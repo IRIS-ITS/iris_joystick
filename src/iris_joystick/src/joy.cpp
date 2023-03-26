@@ -61,11 +61,14 @@ ros::Publisher pub_all_data;
 
 ros::Timer send_timer;
 
-char send_buffer[80];
+char send_buffer[94];
 char header[4]="its";
 int8_t indentifier='7';
-float toogle_a[2], toogle_b[2], analog_l[2][2], axes_l2[2], axes_r2[2];
-int32_t button_kotak[2], button_r1[2], button_l1[2];
+
+//data stik
+float analog_l[2][2], analog_r[2][2], axes_l2[2], axes_r2[2], toggle_a, toggle_b;
+int8_t button_sq[2], button_x[2], button_o[2], button_tr[2], button_r1[2], button_l1[2], button_ps[2], button_sl[2], button_pl[2], button_up[2], button_down[2], button_left[2], button_right[2];
+bool is_red_js[2]={false}; //default hitam
 
 void send_cllbck(const ros::TimerEvent &);
 
@@ -198,54 +201,160 @@ void send_cllbck(const ros::TimerEvent &)
     // std::cout<<"HALO\n";
     memcpy(send_buffer,header,3);
     memcpy(send_buffer+3,&indentifier,1);
-    memcpy(send_buffer+4,&toogle_a[0],4);
-    memcpy(send_buffer+8,&toogle_b[0],4);
-    memcpy(send_buffer+12,&button_kotak[0],4);
-    memcpy(send_buffer+16,&analog_l[0][0],4);
-    memcpy(send_buffer+20,&analog_l[0][1],4);
-    memcpy(send_buffer+24,&button_r1[0],4);
-    memcpy(send_buffer+28,&axes_l2[0],4);
-    memcpy(send_buffer+32,&axes_r2[0],4);
-    memcpy(send_buffer+36,&button_l1[0],4);
-    memcpy(send_buffer+40,&toogle_a[1],4);
-    memcpy(send_buffer+44,&toogle_b[1],4);
-    memcpy(send_buffer+48,&button_kotak[1],4);
-    memcpy(send_buffer+52,&analog_l[1][0],4);
-    memcpy(send_buffer+56,&analog_l[1][1],4);
-    memcpy(send_buffer+60,&button_r1[1],4);
-    memcpy(send_buffer+64,&axes_l2[1],4);
-    memcpy(send_buffer+68,&axes_r2[1],4);
-    memcpy(send_buffer+72,&button_l1[1],4);
+    //js0
+    memcpy(send_buffer+4,&analog_l[0][0],4);
+    memcpy(send_buffer+8,&analog_l[0][1],4);
+    memcpy(send_buffer+12,&axes_l2[0],4);
+    memcpy(send_buffer+16,&analog_r[0][0],4);
+    memcpy(send_buffer+20,&analog_r[0][1],4);
+    memcpy(send_buffer+24,&axes_r2[0],4);
+    memcpy(send_buffer+28,&button_x[0],1);
+    // memcpy(send_buffer+29,&button_o[0],1);
+    // memcpy(send_buffer+30,&button_tr[0],1);
+    memcpy(send_buffer+31,&button_sq[0],1);
+    memcpy(send_buffer+32,&button_l1[0],1);
+    memcpy(send_buffer+33,&button_r1[0],1);
+    // memcpy(send_buffer+34,&button_sl[0],1);
+    // memcpy(send_buffer+35,&button_pl[0],1);
+    // memcpy(send_buffer+36,&button_ps[0],1);
+    // memcpy(send_buffer+37,&button_up[0],1);
+    // memcpy(send_buffer+38,&button_down[0],1);
+    // memcpy(send_buffer+39,&button_left[0],1);
+    // memcpy(send_buffer+40,&button_right[0],1);
+    //js1
+    memcpy(send_buffer+41,&analog_l[1][0],4);
+    memcpy(send_buffer+45,&analog_l[1][1],4);
+    memcpy(send_buffer+49,&axes_l2[1],4);
+    memcpy(send_buffer+53,&analog_r[1][0],4);
+    memcpy(send_buffer+57,&analog_r[1][1],4);
+    memcpy(send_buffer+61,&axes_r2[1],4);
+    memcpy(send_buffer+65,&button_x[1],1);
+    // memcpy(send_buffer+66,&button_o[1],1);
+    // memcpy(send_buffer+67,&button_tr[1],1);
+    memcpy(send_buffer+68,&button_sq[1],1);
+    memcpy(send_buffer+69,&button_l1[1],1);
+    memcpy(send_buffer+70,&button_r1[1],1);
+    // memcpy(send_buffer+71,&button_sl[1],1);
+    // memcpy(send_buffer+72,&button_pl[1],1);
+    // memcpy(send_buffer+73,&button_ps[1],1);
+    // memcpy(send_buffer+74,&button_up[1],1);
+    // memcpy(send_buffer+75,&button_down[1],1);
+    // memcpy(send_buffer+76,&button_left[1],1);
+    // memcpy(send_buffer+77,&button_right[1],1);
+
+    // printf("%f %f\n", axes_r2[0], axes_r2[1]);
+
+
     int nsend = sendto(multiSocket.socketID, send_buffer, sizeof(send_buffer), 0, (struct sockaddr *)&multiSocket.destAddress, sizeof(struct sockaddr));
     // std::cout<<nsend;
 }
 
 void JoyCllbckjs0(const sensor_msgs::Joy::ConstPtr  &msg)
 {
-    ROS_INFO("[%f] [%f] [%d] [%f] [%f] [%d] [%f] [%f] [%d]", msg->axes[7], msg->axes[6], msg->buttons[3], msg->axes[0], msg->axes[1], msg->buttons[5], msg->axes[2], msg->axes[5], msg->buttons[4]);
-    toogle_a[0]=msg->axes[7];
-    toogle_b[0]=msg->axes[6];
-    button_kotak[0]=msg->buttons[3];
-    analog_l[0][0]=msg->axes[0];
-    analog_l[0][1]=msg->axes[1];
-    button_r1[0]=msg->buttons[5];
+    // ROS_INFO("[%d] [%f] [%f] [%d] [%f] [%f] [%d] [%f] [%f] [%d]",msg->buttons[0], msg->axes[7], msg->axes[6], msg->buttons[3], msg->axes[0], msg->axes[1], msg->buttons[5], msg->axes[2], msg->axes[5], msg->buttons[4]);
+    analog_l[0][0]=-msg->axes[0];//analog x
+    analog_l[0][1]=msg->axes[1];//analog y
     axes_l2[0]=msg->axes[2];
+    analog_r[0][0]=msg->axes[3];
+    analog_r[0][1]=msg->axes[4];
     axes_r2[0]=msg->axes[5];
+    button_x[0]=msg->buttons[0];
+    button_o[0]=msg->buttons[1];
+    button_tr[0]=msg->buttons[2];
+    button_sq[0]=msg->buttons[3];
     button_l1[0]=msg->buttons[4];
+    button_r1[0]=msg->buttons[5];
+    button_sl[0]=msg->buttons[8];
+    button_pl[0]=msg->buttons[9];
+    button_ps[0]=msg->buttons[10];
+
+    //stik hitam    
+    button_up[0]=msg->buttons[13];
+    button_down[0]=msg->buttons[14];
+    button_left[0]=msg->buttons[15];
+    button_right[0]=msg->buttons[16];
+
+    if(button_up[0]>1||button_up[0]<-1||button_down[0]>1||button_down[0]<-1||button_left[0]>1||button_left[0]<-1||button_right[0]>1||button_right[0]<-1){
+        is_red_js[0]=true;
+    }else{
+        is_red_js[0]=false;
+    }
+
+    if(is_red_js[0]){
+        //stik merah
+        toggle_a=msg->axes[7];
+        toggle_b=msg->axes[6];
+        button_up[0]=0;
+        button_down[0]=0;
+        button_left[0]=0;
+        button_right[0]=0;
+        if(toggle_a>0){
+            button_up[0]=1;
+        }else if(toggle_a<0){
+            button_down[0]=1;
+        }
+        if(toggle_b>0){
+            button_left[0]=1;
+        }else if(toggle_b<0){
+            button_right[0]=1;
+        }
+    }
+
+    ROS_INFO("%d %d %d %d || %.f %.f || %.f %.f || %.f %.f", button_up[0], button_down[0], button_left[0], button_right[0], toggle_a, toggle_b, analog_l[0][0], analog_l[0][1], axes_l2[0], axes_r2[0]);
 }
 
 void JoyCllbckjs1(const sensor_msgs::Joy::ConstPtr  &msg)
 {
-    ROS_ERROR("[%f] [%f] [%d] [%f] [%f] [%d] [%f] [%f] [%d]", msg->axes[7], msg->axes[6], msg->buttons[3], msg->axes[0], msg->axes[1], msg->buttons[5], msg->axes[2], msg->axes[5], msg->buttons[4]);
-    toogle_a[1]=msg->axes[7];
-    toogle_b[1]=msg->axes[6];
-    button_kotak[1]=msg->buttons[3];
-    analog_l[1][0]=msg->axes[0];
-    analog_l[1][1]=msg->axes[1];
-    button_r1[1]=msg->buttons[5];
+    // ROS_ERROR("[%f] [%f] [%d] [%f] [%f] [%d] [%f] [%f] [%d]", msg->axes[7], msg->axes[6], msg->buttons[3], msg->axes[0], msg->axes[1], msg->buttons[5], msg->axes[2], msg->axes[5], msg->buttons[4]);
+    analog_l[1][0]=-msg->axes[0];//analog x
+    analog_l[1][1]=msg->axes[1];//analog y
     axes_l2[1]=msg->axes[2];
+    analog_r[1][0]=msg->axes[3];
+    analog_r[1][1]=msg->axes[4];
     axes_r2[1]=msg->axes[5];
+    button_x[1]=msg->buttons[0];
+    button_o[1]=msg->buttons[1];
+    button_tr[1]=msg->buttons[2];
+    button_sq[1]=msg->buttons[3];
     button_l1[1]=msg->buttons[4];
+    button_r1[1]=msg->buttons[5];
+    button_sl[1]=msg->buttons[8];
+    button_pl[1]=msg->buttons[9];
+    button_ps[1]=msg->buttons[10];
+
+    //stik hitam    
+    button_up[1]=msg->buttons[13];
+    button_down[1]=msg->buttons[14];
+    button_left[1]=msg->buttons[15];
+    button_right[1]=msg->buttons[16];
+
+    if(button_up[1]>1||button_up[1]<-1||button_down[1]>1||button_down[1]<-1||button_left[1]>1||button_left[1]<-1||button_right[1]>1||button_right[1]<-1){
+        is_red_js[1]=true;
+    }else{
+        is_red_js[1]=false;
+    }
+
+    if(is_red_js[1]){
+        //stik merah
+        toggle_a=msg->axes[7];
+        toggle_b=msg->axes[6];
+        button_up[1]=0;
+        button_down[1]=0;
+        button_left[1]=0;
+        button_right[1]=0;
+        if(toggle_a>0){
+            button_up[1]=1;
+        }else if(toggle_a<0){
+            button_down[1]=1;
+        }
+        if(toggle_b>0){
+            button_left[1]=1;
+        }else if(toggle_b<0){
+            button_right[1]=1;
+        }
+    }
+
+    ROS_ERROR("%d %d %d %d || %.f %.f || %.f %.f || %.f %.f", button_up[1], button_down[1], button_left[1], button_right[1], toggle_a, toggle_b, analog_l[1][0], analog_l[1][1], axes_l2[1], axes_r2[1]);
 }
 
 int main(int argc, char **argv)
@@ -261,8 +370,8 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    ros::Subscriber subjs0 = NH.subscribe("/js0/joy", 10, JoyCllbckjs0);
-    ros::Subscriber subjs1 = NH.subscribe("/js1/joy", 10, JoyCllbckjs1);
+    ros::Subscriber subjs0 = NH.subscribe("/js0/joy", 100, JoyCllbckjs0);
+    ros::Subscriber subjs1 = NH.subscribe("/js1/joy", 100, JoyCllbckjs1);
     send_timer = NH.createTimer(ros::Duration(0.1), send_cllbck);
 
     spinner.spin();
