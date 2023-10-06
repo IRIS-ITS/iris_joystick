@@ -55,3 +55,6 @@ include_directories(
  
 add_executable(joystick src/joy.cpp)
 target_link_libraries(joystick ${catkin_LIBRARIES} )
+
+add_executable(udp src/udp.cpp)
+target_link_libraries(udp ${catkin_LIBRARIES} )
